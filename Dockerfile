@@ -1,9 +1,18 @@
-FROM python:3.9-slim
+FROM python:3.7.12-slim-buster
+
 WORKDIR /app
-EXPOSE 8080
-ENV PORT=8080
-ENV HOST=0.0.0.0
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8080"]
+
+COPY requirements.txt .
+
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get install -y ffmpeg && \
+    pip install -r requirements.txt
+
+EXPOSE 8501
+
+COPY . /app
+
+ENTRYPOINT ["streamlit", "run"]
+
+CMD ["app.py", "--server.address=0.0.0.0", "--server.port=8501"]

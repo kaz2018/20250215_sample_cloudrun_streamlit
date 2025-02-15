@@ -1,18 +1,14 @@
-FROM python:3.7.12-slim-buster
+FROM python:3
 
-WORKDIR /app
+ENV PYTHONUNBUFFERED True
 
-COPY requirements.txt .
+EXPOSE 8080
 
-RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get install -y ffmpeg && \
-    pip install -r requirements.txt
+ENV APP_HOME /app
+WORKDIR $APP_HOME
 
-EXPOSE 8501
+COPY . .
 
-COPY . /app
+RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["streamlit", "run"]
-
-CMD ["app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD streamlit run --server.port 8080 --server.enableCORS false app.py

@@ -13,8 +13,10 @@ RUN git clone https://github.com/streamlit/streamlit-example.git .
 
 RUN pip3 install -r requirements.txt
 
-EXPOSE 8501
-
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
-ENTRYPOINT ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# EXPOSE 8501 は Streamlit のデフォルトポートなので、Gunicornでも同じポートを使用
+EXPOSE 8501
+
+# CMD 命令を Gunicorn で Streamlit アプリを起動するように変更
+CMD ["gunicorn", "app:app", "-w", "3", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8501"]
